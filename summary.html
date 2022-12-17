@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+
+<!-- Mirrored from kaesve.nl/projects/mold/summary.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 17 Dec 2022 06:18:43 GMT -->
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Ken Voskuil (mail@kaesve.nl)" />
+  <title>Simulating slime mold with WebGL</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <script src="../../../cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.3/katex.min.js"></script><script src="../../../cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.3/contrib/auto-render.min.js"></script><script>document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body);
+  });</script><link rel="stylesheet" href="../../../cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.3/katex.min.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">Simulating slime mold with WebGL</h1>
+<p class="author">Ken Voskuil (mail@kaesve.nl)</p>
+</header>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@kaesve" />
+<meta name="twitter:creator" content="@kaesve" />
+<meta name="twitter:title" content="Simulating slime molds in WebGL" />
+<meta name="twitter:description" content="How to use WebGL for simulating millions of particles, creating stunning animations" />
+<meta name="og:description" content="How to use WebGL for simulating millions of particles, creating stunning animations" />
+<meta name="og:type" content="article" />
+<meta name="description" content="How to use WebGL for simulating millions of particles, creating stunning animations" />
+<meta name="twitter:image" content="https://kaesve.nl/projects/mold/twitter-card.png" />
+<meta name="og:image" content="https://kaesve.nl/projects/mold/twitter-card.png" />
+<!-- Matomo -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="http://track.voyager.studio/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', '4']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
+<p><link rel="stylesheet" href="styles.css" /></p>
+<p>A short while ago I attended the Revision demo party, a giant lan party for graphics programmers and other creative nerds. These events are a great source of inspiration and motivation for me, and I always get a lot of energy to work on something new. This time I decided I wanted to write a ‘slime mold’ simulation in WebGL, based on Sage Jenson’s <a href="http://sagejenson.net/physarium">physarium</a> project. Their work is based on a paper that models real organisms, but I was mostly interested in the beautiful visual qualities of their results. The animations they tweet consistently take my breath away. Besides, this project also seemed like the perfect challenge to push my knowledge of using WebGL for simulations.</p>
+<figure class="demo-figure">
+  <canvas id="simulationCanvas" class="demo-canvas"></canvas>
+</figure>
+<p>This page summarises how I approached this project, some of the problems I encountered, and how I solved them. For this article, I’ll assume that you have a background in WebGL or OpenGL, and ideally in using it for simulations as well. However, if you don’t, I plan write a more in-depth article in the future that explains these fundamentals – so keep an eye out (and bug me on <a href="https://twitter.com/kaesve">twitter</a> to actually do it).</p>
+<p>Before I explain my solution, I recommend looking at Sage’s <a href="http://sagejenson.net/physarium">project page</a>, which includes an excellent diagram explaining the algorithm on a conceptual level. In short:</p>
+<p>We simulate <span class="math inline">\(N\)</span> agents, each having an <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> coordinate and a <span class="math inline">\(heading\)</span>. We also simulate a ‘trail map’ with a grid with <span class="math inline">\(m*m\)</span> cells, each containing a value that represents the density of the agent trail at that location. The grid spans the area in which the agents move, and we simulate diffusion and decay of the trail left by the agents on this grid. The simulation algorithm can be summarised as follows:</p>
+<p>For each <strong>agent</strong>:</p>
+<ol type="1">
+<li>Use the trail map to determine if the agent should turn left or right, or go straight ahead</li>
+<li>Update the <code>heading</code> accordingly</li>
+<li>Update the coordinates, moving the agent in its <code>heading</code> direction with a fixed speed</li>
+<li>Increase the value in the trail map at the new location of the agent</li>
+</ol>
+<p>For each <strong>grid cell</strong>:</p>
+<ol type="1">
+<li>Set its value to a weighted average between it and its neighbors, to disperse the trail density</li>
+<li>Multiply by the decay constant</li>
+</ol>
+<h2 id="implementation-summary">Implementation summary</h2>
+<p>For my WebGL implementation, I encode the state of the simulation in 4 textures: x coordinates, y coordinates, headings and densities. I create two of each, to ping pong between. I chose to make all the textures the same size. This means that the number of agents is directly tied to the trail map size, and that on average there’s one agent per grid cell. The upside of this constraint is that I do the diffusion, decay and moving the agents in the same step.</p>
+<p>Most of the code for this project is WebGL configuration and setup: creating the state textures and initialize them with random data, the programs and a frame buffer. I also create two array buffers:</p>
+<ul>
+<li>A buffer with <span class="math inline">\(3\)</span> points, describing a screen covering triangle</li>
+<li>A buffer with <span class="math inline">\(N\)</span> points, encoding the UVs of each agent</li>
+</ul>
+<p>I split the code up in three WebGL programs;</p>
+<ul>
+<li>Update the agents and diffuse and decay the trail map</li>
+<li>Depositing a trail</li>
+<li>Render to the screen</li>
+</ul>
+<p>I gratefully use Javascripts fairly new template string syntax, to include the shader code directly in the rest of my code, and to reuse snippets between shaders. The render program is straightforward, just displaying the trail map. I outline how I use the other two programs below:</p>
+<h3 id="program-1-update-agents-and-trail-map">Program 1: Update agents and trail map</h3>
+<ol type="1">
+<li>Bind the offscreen frame buffer</li>
+<li>Bind the <em>ping</em> textures to texture units 0-3, to read from</li>
+<li>Bind the <em>pong</em> textures to color attachments 0-3, to write to</li>
+<li>Load the update program</li>
+<li>Set blend function to overwrite</li>
+<li>Draw the screen covering triangle. This results in running a fragment shader for each pixel in the frame buffer. For each pixel:
+<ul>
+<li>Read the agents position and heading from the textures at <code>gl_FragCoord</code></li>
+<li>Use these to read from the density texture</li>
+<li>Update and output the heading and position</li>
+<li>Read the density at <code>gl_FragCoord</code>, and the densities in the fragments around it</li>
+<li>Set the output to a weighted average of these densities, multiplied by the decay rate</li>
+</ul></li>
+</ol>
+<p>This fragment shader (minus some constants and setup) contains most of the simulation logic and looks like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode glsl"><code class="sourceCode glsl"><a class="sourceLine" id="cb1-1" data-line-number="1"></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">uniform</span> <span class="dt">sampler2D</span>        xTex;</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">uniform</span> <span class="dt">sampler2D</span>        yTex;</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">uniform</span> <span class="dt">sampler2D</span>  headingTex;</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">uniform</span> <span class="dt">sampler2D</span>  densityTex;</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">layout</span>(<span class="dt">location</span> = <span class="dv">0</span>) <span class="dt">out</span> <span class="dt">vec4</span>       xBuf;</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="kw">layout</span>(<span class="dt">location</span> = <span class="dv">1</span>) <span class="dt">out</span> <span class="dt">vec4</span>       yBuf;</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="kw">layout</span>(<span class="dt">location</span> = <span class="dv">2</span>) <span class="dt">out</span> <span class="dt">vec4</span> headingBuf;</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="kw">layout</span>(<span class="dt">location</span> = <span class="dv">3</span>) <span class="dt">out</span> <span class="dt">vec4</span> densityBuf;</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="dt">void</span> <span class="fu">main</span>() {</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">  <span class="co">// Convert from fragment coordinates to texture coordinates</span></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">  <span class="dt">vec2</span> uv = <span class="bu">gl_FragCoord</span>.<span class="fu">xy</span> / SIM_DIM;</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">  <span class="co">// Read current state from the heading and coordinate textures</span></a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">  <span class="dt">float</span> x = <span class="fu">unpack</span>(<span class="bu">texture</span>(xTex, uv));</a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">  <span class="dt">float</span> y = <span class="fu">unpack</span>(<span class="bu">texture</span>(yTex, uv));</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">  <span class="dt">vec2</span> p = <span class="dt">vec2</span>(x, y);</a>
+<a class="sourceLine" id="cb1-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">  <span class="dt">float</span> heading = <span class="fu">unpack</span>(<span class="bu">texture</span>(headingTex, uv))*TAU;</a>
+<a class="sourceLine" id="cb1-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">  <span class="co">// Take samples in the trail map near the agents location</span></a>
+<a class="sourceLine" id="cb1-27" data-line-number="27">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb1-28" data-line-number="28">  <span class="dt">vec2</span>  leftSampleP = p + SENSOR_DISTANCE*<span class="fu">a2v</span>(heading - SENSOR_ANGLE);</a>
+<a class="sourceLine" id="cb1-29" data-line-number="29">  <span class="dt">float</span> leftSample  = <span class="fu">unpack</span>(<span class="bu">texture</span>(densityTex, leftSampleP));</a>
+<a class="sourceLine" id="cb1-30" data-line-number="30"></a>
+<a class="sourceLine" id="cb1-31" data-line-number="31">  <span class="dt">vec2</span>  forwardSampleP = p + SENSOR_DISTANCE*<span class="fu">a2v</span>(heading);</a>
+<a class="sourceLine" id="cb1-32" data-line-number="32">  <span class="dt">float</span> forwardSample  = <span class="fu">unpack</span>(<span class="bu">texture</span>(densityTex, forwardSampleP));</a>
+<a class="sourceLine" id="cb1-33" data-line-number="33"></a>
+<a class="sourceLine" id="cb1-34" data-line-number="34">  <span class="dt">vec2</span>  rightSampleP = p + SENSOR_DISTANCE*<span class="fu">a2v</span>(heading + SENSOR_ANGLE);</a>
+<a class="sourceLine" id="cb1-35" data-line-number="35">  <span class="dt">float</span> rightSample  = <span class="fu">unpack</span>(<span class="bu">texture</span>(densityTex, rightSampleP));</a>
+<a class="sourceLine" id="cb1-36" data-line-number="36"></a>
+<a class="sourceLine" id="cb1-37" data-line-number="37">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb1-38" data-line-number="38">  <span class="co">// Update heading</span></a>
+<a class="sourceLine" id="cb1-39" data-line-number="39">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb1-40" data-line-number="40">  <span class="kw">if</span> (leftSample &lt; LOW_DENSITY</a>
+<a class="sourceLine" id="cb1-41" data-line-number="41">    &amp;&amp; forwardSample &lt; HIGH_DENSITY</a>
+<a class="sourceLine" id="cb1-42" data-line-number="42">    &amp;&amp; HIGH_DENSITY &lt;= rightSample) {</a>
+<a class="sourceLine" id="cb1-43" data-line-number="43">    heading += ROTATION;</a>
+<a class="sourceLine" id="cb1-44" data-line-number="44">  } <span class="kw">else</span> <span class="kw">if</span> (</a>
+<a class="sourceLine" id="cb1-45" data-line-number="45">    rightSample &lt; LOW_DENSITY</a>
+<a class="sourceLine" id="cb1-46" data-line-number="46">    &amp;&amp; forwardSample &lt; HIGH_DENSITY</a>
+<a class="sourceLine" id="cb1-47" data-line-number="47">    &amp;&amp; HIGH_DENSITY &lt;= leftSample) {</a>
+<a class="sourceLine" id="cb1-48" data-line-number="48">    heading -= ROTATION;</a>
+<a class="sourceLine" id="cb1-49" data-line-number="49">  } <span class="kw">else</span> <span class="kw">if</span> (</a>
+<a class="sourceLine" id="cb1-50" data-line-number="50">    HIGH_DENSITY &lt;= leftSample</a>
+<a class="sourceLine" id="cb1-51" data-line-number="51">    &amp;&amp; forwardSample &lt; HIGH_DENSITY</a>
+<a class="sourceLine" id="cb1-52" data-line-number="52">    &amp;&amp; HIGH_DENSITY &lt;= rightSample</a>
+<a class="sourceLine" id="cb1-53" data-line-number="53">  ) {</a>
+<a class="sourceLine" id="cb1-54" data-line-number="54">    <span class="co">// </span><span class="al">TODO</span><span class="co">: Use a more random value</span></a>
+<a class="sourceLine" id="cb1-55" data-line-number="55">    heading += <span class="bu">sign</span>(<span class="bu">cos</span>(<span class="fl">11131.3</span>*<span class="bu">gl_FragCoord</span>.<span class="fu">x</span>)*<span class="bu">cos</span>(<span class="fl">7131.3</span>*<span class="bu">gl_FragCoord</span>.<span class="fu">y</span>))*ROTATION;</a>
+<a class="sourceLine" id="cb1-56" data-line-number="56">  }</a>
+<a class="sourceLine" id="cb1-57" data-line-number="57"></a>
+<a class="sourceLine" id="cb1-58" data-line-number="58"></a>
+<a class="sourceLine" id="cb1-59" data-line-number="59">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb1-60" data-line-number="60">  <span class="co">// Update location</span></a>
+<a class="sourceLine" id="cb1-61" data-line-number="61">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb1-62" data-line-number="62">  p = <span class="fu">wrap</span>(p + SPEED*<span class="fu">a2v</span>(heading));</a>
+<a class="sourceLine" id="cb1-63" data-line-number="63"></a>
+<a class="sourceLine" id="cb1-64" data-line-number="64"></a>
+<a class="sourceLine" id="cb1-65" data-line-number="65">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb1-66" data-line-number="66">  <span class="co">// Calculate diffused density at the current fragment</span></a>
+<a class="sourceLine" id="cb1-67" data-line-number="67">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb1-68" data-line-number="68">  <span class="dt">vec3</span> spacing = <span class="dt">vec3</span>(<span class="fl">1.0</span>/SIM_DIM, <span class="fl">0.0</span>);</a>
+<a class="sourceLine" id="cb1-69" data-line-number="69">  <span class="dt">float</span> diffuse = (</a>
+<a class="sourceLine" id="cb1-70" data-line-number="70">    <span class="fu">unpack</span>(<span class="bu">texture</span>(densityTex, uv))</a>
+<a class="sourceLine" id="cb1-71" data-line-number="71">    </a>
+<a class="sourceLine" id="cb1-72" data-line-number="72">    + ( <span class="co">// 4/5 + 4/20 = (16 + 4)/20 = 1</span></a>
+<a class="sourceLine" id="cb1-73" data-line-number="73">      <span class="fl">0.2</span>*(</a>
+<a class="sourceLine" id="cb1-74" data-line-number="74">        <span class="fu">unpack</span>(<span class="bu">texture</span>(densityTex, uv + spacing.<span class="fu">zy</span>)) + <span class="co">// north</span></a>
+<a class="sourceLine" id="cb1-75" data-line-number="75">        <span class="fu">unpack</span>(<span class="bu">texture</span>(densityTex, uv + spacing.<span class="fu">xz</span>)) + <span class="co">// east</span></a>
+<a class="sourceLine" id="cb1-76" data-line-number="76">        <span class="fu">unpack</span>(<span class="bu">texture</span>(densityTex, uv - spacing.<span class="fu">zy</span>)) + <span class="co">// south</span></a>
+<a class="sourceLine" id="cb1-77" data-line-number="77">        <span class="fu">unpack</span>(<span class="bu">texture</span>(densityTex, uv - spacing.<span class="fu">xz</span>))   <span class="co">// west</span></a>
+<a class="sourceLine" id="cb1-78" data-line-number="78">      )</a>
+<a class="sourceLine" id="cb1-79" data-line-number="79">      + <span class="fl">0.05</span>*(</a>
+<a class="sourceLine" id="cb1-80" data-line-number="80">        <span class="fu">unpack</span>(<span class="bu">texture</span>(densityTex, uv + spacing.<span class="fu">zy</span> + spacing.<span class="fu">xz</span>)) + <span class="co">// ne</span></a>
+<a class="sourceLine" id="cb1-81" data-line-number="81">        <span class="fu">unpack</span>(<span class="bu">texture</span>(densityTex, uv - spacing.<span class="fu">zy</span> + spacing.<span class="fu">xz</span>)) + <span class="co">// se</span></a>
+<a class="sourceLine" id="cb1-82" data-line-number="82">        <span class="fu">unpack</span>(<span class="bu">texture</span>(densityTex, uv - spacing.<span class="fu">zy</span> - spacing.<span class="fu">xz</span>)) + <span class="co">// sw</span></a>
+<a class="sourceLine" id="cb1-83" data-line-number="83">        <span class="fu">unpack</span>(<span class="bu">texture</span>(densityTex, uv + spacing.<span class="fu">zy</span> - spacing.<span class="fu">xz</span>))   <span class="co">// nw</span></a>
+<a class="sourceLine" id="cb1-84" data-line-number="84">      )</a>
+<a class="sourceLine" id="cb1-85" data-line-number="85">    )</a>
+<a class="sourceLine" id="cb1-86" data-line-number="86">  )/<span class="fl">2.0</span>;</a>
+<a class="sourceLine" id="cb1-87" data-line-number="87"></a>
+<a class="sourceLine" id="cb1-88" data-line-number="88"></a>
+<a class="sourceLine" id="cb1-89" data-line-number="89">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb1-90" data-line-number="90">  <span class="co">// Write to textures</span></a>
+<a class="sourceLine" id="cb1-91" data-line-number="91">  <span class="co">//</span></a>
+<a class="sourceLine" id="cb1-92" data-line-number="92">        xBuf = <span class="fu">pack</span>(p.<span class="fu">x</span>);</a>
+<a class="sourceLine" id="cb1-93" data-line-number="93">        yBuf = <span class="fu">pack</span>(p.<span class="fu">y</span>);</a>
+<a class="sourceLine" id="cb1-94" data-line-number="94">  headingBuf = <span class="fu">pack</span>(<span class="fu">wrap</span>(heading/TAU));</a>
+<a class="sourceLine" id="cb1-95" data-line-number="95">  densityBuf = <span class="fu">pack</span>(DECAY_RATE*diffuse);</a>
+<a class="sourceLine" id="cb1-96" data-line-number="96">}</a></code></pre></div>
+<h3 id="program-2-deposit">Program 2: Deposit</h3>
+<ol type="1">
+<li>Load the deposit program</li>
+<li>Bind the <em>pong</em> <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> textures to texture units 0 and 1</li>
+<li>Bind the <em>pong</em> density texture to color attachment 3</li>
+<li>Set the blend function to <code>GL.FUNC_ADD</code></li>
+<li>Draw <span class="math inline">\(N\)</span> <code>GL.POINT</code>s with the agent UV buffer. In the vertex shader, which runs for each vector in the buffer:
+<ul>
+<li>Use the UV to read the agents position from textures</li>
+<li>Translate this position to a screen space coordinate</li>
+<li>Set <code>gl_PointSize = 1.0</code></li>
+</ul></li>
+<li>The fragment shader outputs a constant value based on the deposit rate, which is added to the current density value at the agents position</li>
+</ol>
+<p>Aside from working through the usual WebGL struggles, I wanted to highlight two of the problems that took me the most effort to solve.</p>
+<h2 id="encoding-and-decoding-the-state">Encoding and decoding the state</h2>
+<p>When you’re using WebGL for anything other than rendering triangle meshes, the first problem you want to tackle is how you encode program state. In this simulation, the state consists of the agent positions and headings, and the trail densities. Since we want our WebGL program to update these values, we need to encode the state into textures.</p>
+<p>The first approach that comes to mind is using a single texture. Every pixel would store one agent and one trail density value. This seems to work out great, because a pixel (normally) consists of four channels: rgba. We could store the three properties of the agent and the density each in a channel and be done! Unfortunately, there’s a small snag; these channels are stored as 8b numbers. This means that each channel can take on 256 different values – maybe enough to encode the trail density and heading, but way too coarse to encode the position.</p>
+<p>One solution that I tried to make work is using different texture formats. The documentation for <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D">texImage2D</a> shows you can choose the data representation and format for textures. The option I want to use is <code>RGBA32F</code>, which would store each channel as a 32b number. Unfortunately, I was not able to get this to work. I’m not sure if this is a limitation of my laptop, if it is not possible to write to floating point textures using WebGL2, or if I am just missing steps/misconfiguring. But after trying for an hour or two, I gave up.</p>
+<p>In the end, I chose to use separate textures instead of channels to store the state, one <code>RGBA8</code> texture per property. We can use the same layout for each texture, eg. the same pixel in each texture encodes a property for one agent/cell. With WebGL2 (or using an extension in WebGL1) it is possible to write to several buffers or textures from your fragment shader, so this solution can still update all the properties in the same program. There is still one more hurdle to clear though. One pixel in a <code>RGBA8</code> texture can store 4*8 = 32 bits of data, which is more than enough precision. However, there is no convenient way to read a pixel as a single value. Instead, when we read a property from a texture in our fragment shader, we get a <code>vec4</code> with a value between 0-1 for each channel. WebGL normalizes the channel values for us, by dividing them by 255. To work around this, we can ‘unpack’ the vector after reading it, and then ‘pack’ it again before we write it out. I happened to find exactly these operations while I was digging through the Three.js shader source code, so that’s what I used:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode glsl"><code class="sourceCode glsl"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">// Taken from https://github.com/mrdoob/three.js/blob/2ad018c7c7ad103c9da9d7f22b3154537384ab26/src/renderers/shaders/ShaderChunk/packing.glsl.js</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">// MIT Lisence: https://github.com/mrdoob/three.js/blob/2ad018c7c7ad103c9da9d7f22b3154537384ab26/LICENSE</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="dt">const</span> <span class="dt">float</span> PackUpscale = <span class="fl">256.</span> / <span class="fl">255.</span>; <span class="co">// fraction -&gt; 0..1 (including 1)</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="dt">const</span> <span class="dt">float</span> UnpackDownscale = <span class="fl">255.</span> / <span class="fl">256.</span>; <span class="co">// 0..1 -&gt; fraction (excluding 1)</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="dt">const</span> <span class="dt">vec3</span> PackFactors = <span class="dt">vec3</span>( <span class="fl">256.</span> * <span class="fl">256.</span> * <span class="fl">256.</span>, <span class="fl">256.</span> * <span class="fl">256.</span>,  <span class="fl">256.</span> );</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="dt">const</span> <span class="dt">vec4</span> UnpackFactors = UnpackDownscale / <span class="dt">vec4</span>( PackFactors, <span class="fl">1.</span> );</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="dt">const</span> <span class="dt">float</span> ShiftRight8 = <span class="fl">1.</span> / <span class="fl">256.</span>;</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="dt">vec4</span> <span class="fu">pack</span>( <span class="dt">const</span> <span class="dt">in</span> <span class="dt">float</span> v ) {</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">    <span class="dt">vec4</span> r = <span class="dt">vec4</span>( <span class="bu">fract</span>( v * PackFactors ), v );</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">    r.<span class="fu">yzw</span> -= r.<span class="fu">xyz</span> * ShiftRight8; <span class="co">// tidy overflow</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">    <span class="kw">return</span> r * PackUpscale;</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">}</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="dt">float</span> <span class="fu">unpack</span>( <span class="dt">const</span> <span class="dt">in</span> <span class="dt">vec4</span> v ) {</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">    <span class="kw">return</span> <span class="bu">dot</span>( v, UnpackFactors );</a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">}</a></code></pre></div>
+<h2 id="deposit">Deposit</h2>
+<p>In my implementation, I split updating agents into two programs: updating the location and heading, and depositing onto the trail map. If you were writing this in normal Javascript, this would seem like a weird and somewhat arbitrary separation, but it is necessary to implement the algorithm in WebGL. For the first part of the update, I run a fragment shader for all <span class="math inline">\(N\)</span> pixels in the state textures. Say we are running the fragment shader for some pixel at <span class="math inline">\(p_{pixel}\)</span>. We get the agent position <span class="math inline">\(p_{agent}\)</span>, and can read from the trail map using that position. The fragment shader can then output the updated values for this agent, as outlined before. The problem is, there is no way to write to a different pixel from the fragment shader. This means that even though we can read the density at <span class="math inline">\(p_{agent}\)</span>, we can’t increase it – we need a different solution.</p>
+<p>The deposit program uses a different render strategy. Instead of ‘drawing’ a giant screen covering triangle and putting all the logic in the fragment shader, I draw a <code>GL.POINT</code> for each agent, passing the vertex shader the agents UV coordinates as an attribute (it might have been better to generate these on the fly, in the vertex shader itself). The vertex shader uses the UV to output the agents position, together with <code>gl_PointSize = 1.0</code>. This should result in running the fragment shader for the one pixel where we want to increase the trail value.</p>
+<p>I used another clever trick at this point, but while writing this article I realized it creates problems, and that I probably didn’t need it in the first place. I was trying to avoid reading and writing to/from the same trail map texture. This step runs after running the diffusion and decay, so I need to read from the resulting texture. The way I set up the code, this was the ‘output’ texture and I wanted to also write the result of the deposit step to it. As a work around, I came up with the idea of using blend modes instead of reading the current value and increasing it in the fragment shader. By setting the blend mode to <code>GL.FUNC_ADD</code>, the fragment shader could just output a constant value, which WebGL would then add for us to the current value.</p>
+<p>This sounds fine, and even seems to work in practice, but because of the way I encode the values in the textures, the blend function will produce wrong results when a channel overflows. I could have solved this problem with better use of my ping pong textures, but I a similar issue would still persist when an agent isn’t exactly at a pixel coordinate. WebGL will bilinearly interpolate values when you read or write to/from between fragments. This interpolation is per channel, which means it will produce wrong results with our encoding scheme. Getting <code>RGBA32F</code> textures to work should make these problems would disappear.</p>
+<h2 id="results">Results</h2>
+<p>In the end, I was able to write a (mostly) working simulation during my time at Revision, almost completely from scratch. I’d like to thank Sage Jenson again for their enlightening diagram, which made it possible to implement my own version so quickly.</p>
+<p>My laptop can run the simulation at ~30fps simulating and rendering 4M particles. There is definitely still room for improvement: fixing the bugs I mentioned, porting it to WebGL1 for wider support, decoupling the trail map size from the number of agents and optimizing performance, to name a few options. Besides these technical improvements, I’m also inspired to modify the simulation rules to create different behaviors. I already tried controlling the simulation with bitmaps, <a href="https://twitter.com/kaesve/status/1121050670759579648">leading to some cool results</a>. Some other ideas I definitely have to try out are using it in combination with reaction diffusion or fluid simulations and adding user interactions. Besides <a href="https://twitter.com/mxsage">Sage Jenson</a>, <a href="https://twitter.com/ojelibalon">@ojelibalon</a> is also working on these kinds of animations and definitely worth checking out.</p>
+<p>If you enjoyed reading this, or have questions, suggestions or improvements please let me know on <a href="https://twitter.com/kaesve">twitter</a> or through <a href="mailto://mail@kaesve.nl">email</a>.</p>
+<script src="math.js"></script>
+<script src="mouse-interaction.js"></script>
+</body>
+
+<!-- Mirrored from kaesve.nl/projects/mold/summary.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 17 Dec 2022 06:18:47 GMT -->
+</html>
